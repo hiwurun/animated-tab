@@ -26,22 +26,41 @@ export function Tabs({ tabs, defaultTabIndex = 0 }: TabsProps) {
   const buttonRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [navBoundingRect, setNavBoundingRect] = useState<DOMRect | null>(null);
 
+  // 动态更新 navBoundingRect
   useEffect(() => {
+    const updateNavRect = () => {
+      if (navRef.current) {
+        const rect = navRef.current.getBoundingClientRect();
+        setNavBoundingRect(rect);
+      }
+    };
+
+    updateNavRect(); // 初次设置
+    window.addEventListener("resize", updateNavRect); // 窗口大小变化
+    const observer = new ResizeObserver(updateNavRect); // 观察导航栏尺寸变化
     if (navRef.current) {
-      setNavBoundingRect(navRef.current.getBoundingClientRect());
+      observer.observe(navRef.current);
     }
+
+    return () => {
+      window.removeEventListener("resize", updateNavRect);
+      observer.disconnect();
+    };
   }, []);
 
   const getButtonRect = (index: number) => {
     const button = buttonRefs.current[index];
-    return button ? button.getBoundingClientRect() : null;
+    if (!button) {
+      return null;
+    }
+    return button.getBoundingClientRect();
   };
 
   const getHoverAnimationProps = (hoveredRect: DOMRect, navRect: DOMRect) => ({
-    x: hoveredRect.left - navRect.left,
-    y: hoveredRect.top - navRect.top,
+    x: hoveredRect.left - navRect.left + navRef.current!.scrollLeft,
+    y: hoveredRect.top - navRect.top, // 确保 y 位置对齐按钮顶部
     width: hoveredRect.width,
-    height: hoveredRect.height,
+    height: hoveredRect.height, // 使用按钮的高度
   });
 
   return (
@@ -120,7 +139,7 @@ export function Tabs({ tabs, defaultTabIndex = 0 }: TabsProps) {
               width: getButtonRect(selectedTabIndex)!.width,
               x: `calc(${
                 getButtonRect(selectedTabIndex)!.left - navBoundingRect.left
-              }px)`,
+              }px + ${navRef.current!.scrollLeft}px)`,
               opacity: 1,
             }}
             transition={transition}
@@ -135,7 +154,8 @@ export function Tabs({ tabs, defaultTabIndex = 0 }: TabsProps) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.3 }}
-          className='p-6'>
+          className='p-1' // 内容间距保持 p-4
+        >
           {tabs[selectedTabIndex].content}
         </motion.div>
       </AnimatePresence>
