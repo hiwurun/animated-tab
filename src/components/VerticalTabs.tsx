@@ -72,7 +72,7 @@ export function VerticalTabs({ tabs, defaultTabIndex = 0 }: TabsProps) {
     height: selectedRect.height,
     width: 3,
     y: selectedRect.top - navRect.top + (navRef.current?.scrollTop || 0),
-    x: navRect.width - 3, // 指示器在导航栏右侧
+    x: 0, // 指示器在导航栏右侧
     opacity: 1,
   });
 
@@ -80,7 +80,7 @@ export function VerticalTabs({ tabs, defaultTabIndex = 0 }: TabsProps) {
     <div className='w-full rounded-lg shadow-lg overflow-hidden flex flex-row'>
       <nav
         ref={navRef}
-        className='relative z-0 border-r flex-col  py-4 px-3 w-30 flex gap-4 overflow-auto'
+        className='relative z-0 border-r flex-col  py-4 px-3 min-w-30 flex gap-4'
         onPointerLeave={() => setHoveredTabIndex(null)}>
         {tabs.map((tab, index) => {
           const isActive = selectedTabIndex === index;
