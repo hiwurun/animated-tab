@@ -1,54 +1,81 @@
-# React + TypeScript + Vite
+# Animated Tabs
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React component library featuring smooth animated tabs with beautiful transitions.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Vertical tab navigation with animated indicators
+- Smooth transitions between tab content
+- Responsive design
+- Keyboard accessible
+- Custom hover animations
+- Built with TypeScript for type safety
 
-## Expanding the ESLint configuration
+## Installation
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+```bash
+# Using npm
+npm install
+npm run dev
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
+# Using yarn
+yarn
+yarn dev
+
+# Using pnpm
+pnpm install
+pnpm dev
+```
+
+## Usage
+
+```jsx
+import { VerticalTabs } from "./components/VerticalTabs";
+
+function App() {
+  const tabs = [
+    {
+      label: "Dashboard",
+      value: "dashboard",
+      content: <div>Dashboard Content</div>
     },
-  },
-})
+    {
+      label: "Settings",
+      value: "settings",
+      content: <div>Settings Content</div>
+    },
+    {
+      label: "Profile",
+      value: "profile",
+      content: <div>Profile Content</div>
+    }
+  ];
+
+  return <VerticalTabs tabs={tabs} defaultTabIndex={0} />;
+}
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Components
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### VerticalTabs
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+A component that displays tabs in a vertical layout with smooth animations.
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| tabs | Array | - | Array of tab objects with label, value, and content |
+| defaultTabIndex | number | 0 | The index of the default selected tab |
+
+## Technologies
+
+- React
+- TypeScript
+- Framer Motion
+- Tailwind CSS
+- Vite
+
+## License
+
+MIT
