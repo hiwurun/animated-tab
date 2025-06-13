@@ -59,7 +59,7 @@ export function VerticalTabs({ tabs, defaultTabIndex = 0 }: TabsProps) {
   };
 
   const getHoverAnimationProps = (hoveredRect: DOMRect, navRect: DOMRect) => ({
-    y: hoveredRect.top - navRect.top + (navRef.current?.scrollTop || 0) - 15,
+    y: hoveredRect.top - navRect.top - 16,
     x: hoveredRect.left - navRect.left - 12,
     width: hoveredRect.width,
     height: hoveredRect.height,
@@ -80,7 +80,7 @@ export function VerticalTabs({ tabs, defaultTabIndex = 0 }: TabsProps) {
     <div className='w-full rounded-lg shadow-lg overflow-hidden flex flex-row'>
       <nav
         ref={navRef}
-        className='relative z-0 border-r flex-col py-4 px-3 w-30 flex gap-4 overflow-auto'
+        className='relative z-0 border-r flex-col  py-4 px-3 w-30 flex gap-4 overflow-auto'
         onPointerLeave={() => setHoveredTabIndex(null)}>
         {tabs.map((tab, index) => {
           const isActive = selectedTabIndex === index;
@@ -91,7 +91,7 @@ export function VerticalTabs({ tabs, defaultTabIndex = 0 }: TabsProps) {
               ref={el => {
                 buttonRefs.current[index] = el;
               }}
-              className='relative'>
+              className='relative w-full'>
               <Button
                 variant={isActive ? "default" : "ghost"}
                 onClick={() => setSelectedTabIndex(index)}
@@ -99,9 +99,8 @@ export function VerticalTabs({ tabs, defaultTabIndex = 0 }: TabsProps) {
                 onFocus={() => setHoveredTabIndex(index)}
                 className='relative z-20 transition-colors duration-300 min-h-[40px] w-full justify-start'>
                 <motion.span
-                  className='block'
+                  className='block w-full'
                   animate={{
-                    scale: isActive ? 1.1 : 1,
                     transition: { duration: 0.2 },
                   }}>
                   {tab.label}
