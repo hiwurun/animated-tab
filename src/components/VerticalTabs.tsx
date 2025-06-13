@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import type { TabsProps } from "@/types";
 
 const transition = {
   type: "tween",
@@ -8,18 +9,7 @@ const transition = {
   duration: 0.15,
 };
 
-export type Tab = {
-  label: string;
-  value: string;
-  content: React.ReactNode;
-};
-
-interface TabsProps {
-  tabs: Tab[];
-  defaultTabIndex?: number;
-}
-
-export function Tabs({ tabs, defaultTabIndex = 0 }: TabsProps) {
+export function VerticalTabs({ tabs, defaultTabIndex = 0 }: TabsProps) {
   const [selectedTabIndex, setSelectedTabIndex] = useState(defaultTabIndex);
   const [hoveredTabIndex, setHoveredTabIndex] = useState<number | null>(null);
   const navRef = useRef<HTMLDivElement>(null);
@@ -42,9 +32,20 @@ export function Tabs({ tabs, defaultTabIndex = 0 }: TabsProps) {
       observer.observe(navRef.current);
     }
 
+    // 监听导航栏滚动
+    const handleScroll = () => {
+      updateNavRect();
+    };
+    if (navRef.current) {
+      navRef.current.addEventListener("scroll", handleScroll);
+    }
+
     return () => {
       window.removeEventListener("resize", updateNavRect);
       observer.disconnect();
+      if (navRef.current) {
+        navRef.current.removeEventListener("scroll", handleScroll);
+      }
     };
   }, []);
 
@@ -53,21 +54,33 @@ export function Tabs({ tabs, defaultTabIndex = 0 }: TabsProps) {
     if (!button) {
       return null;
     }
-    return button.getBoundingClientRect();
+    const rect = button.getBoundingClientRect();
+    return rect;
   };
 
   const getHoverAnimationProps = (hoveredRect: DOMRect, navRect: DOMRect) => ({
-    x: hoveredRect.left - navRect.left + navRef.current!.scrollLeft,
-    y: hoveredRect.top - navRect.top, // 确保 y 位置对齐按钮顶部
+    y: hoveredRect.top - navRect.top + (navRef.current?.scrollTop || 0) - 15,
+    x: hoveredRect.left - navRect.left - 12,
     width: hoveredRect.width,
-    height: hoveredRect.height, // 使用按钮的高度
+    height: hoveredRect.height,
+  });
+
+  const getIndicatorAnimationProps = (
+    selectedRect: DOMRect,
+    navRect: DOMRect
+  ) => ({
+    height: selectedRect.height,
+    width: 3,
+    y: selectedRect.top - navRect.top + (navRef.current?.scrollTop || 0),
+    x: navRect.width - 3, // 指示器在导航栏右侧
+    opacity: 1,
   });
 
   return (
-    <div className='w-full px-4 rounded-lg shadow-lg overflow-hidden'>
+    <div className='w-full rounded-lg shadow-lg overflow-hidden flex flex-row'>
       <nav
         ref={navRef}
-        className='flex justify-between border-b relative z-0 py-2 pb-3'
+        className='relative z-0 border-r flex-col py-4 px-3 w-30 flex gap-4 overflow-auto'
         onPointerLeave={() => setHoveredTabIndex(null)}>
         {tabs.map((tab, index) => {
           const isActive = selectedTabIndex === index;
@@ -84,7 +97,7 @@ export function Tabs({ tabs, defaultTabIndex = 0 }: TabsProps) {
                 onClick={() => setSelectedTabIndex(index)}
                 onPointerEnter={() => setHoveredTabIndex(index)}
                 onFocus={() => setHoveredTabIndex(index)}
-                className='relative z-20 transition-colors duration-300'>
+                className='relative z-20 transition-colors duration-300 min-h-[40px] w-full justify-start'>
                 <motion.span
                   className='block'
                   animate={{
@@ -104,7 +117,7 @@ export function Tabs({ tabs, defaultTabIndex = 0 }: TabsProps) {
             getButtonRect(hoveredTabIndex) && (
               <motion.div
                 key='hover'
-                className='absolute z-10 top-0 left-0 rounded-md bg-primary/10'
+                className='absolute z-10 rounded-md bg-primary/10'
                 initial={{
                   ...getHoverAnimationProps(
                     getButtonRect(hoveredTabIndex)!,
@@ -133,15 +146,12 @@ export function Tabs({ tabs, defaultTabIndex = 0 }: TabsProps) {
 
         {navBoundingRect && getButtonRect(selectedTabIndex) && (
           <motion.div
-            className='absolute z-10 bottom-0 left-0 h-[3px] bg-primary'
+            className='absolute z-10 bg-primary right-0 top-0 w-[3px]'
             initial={false}
-            animate={{
-              width: getButtonRect(selectedTabIndex)!.width,
-              x: `calc(${
-                getButtonRect(selectedTabIndex)!.left - navBoundingRect.left
-              }px + ${navRef.current!.scrollLeft}px)`,
-              opacity: 1,
-            }}
+            animate={getIndicatorAnimationProps(
+              getButtonRect(selectedTabIndex)!,
+              navBoundingRect
+            )}
             transition={transition}
           />
         )}
@@ -150,12 +160,11 @@ export function Tabs({ tabs, defaultTabIndex = 0 }: TabsProps) {
       <AnimatePresence mode='wait'>
         <motion.div
           key={tabs[selectedTabIndex].value}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -10 }}
           transition={{ duration: 0.3 }}
-          className='p-1' // 内容间距保持 p-4
-        >
+          className='p-1 flex-1'>
           {tabs[selectedTabIndex].content}
         </motion.div>
       </AnimatePresence>

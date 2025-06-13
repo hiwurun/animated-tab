@@ -1,4 +1,6 @@
-import { Tabs, type Tab } from "@/components/Tabs";
+import { HorizontalTabs } from "@/components/HorizontalTabs";
+import { VerticalTabs } from "@/components/VerticalTabs";
+import type { Tab } from "@/types";
 
 const tabs: Tab[] = [
   {
@@ -45,9 +47,14 @@ const tabs: Tab[] = [
 
 function App() {
   return (
-    <div className='w-full h-screen flex items-center justify-center bg-white'>
+    <div className='w-full h-screen flex flex-col items-center gap-10 py-10  bg-white'>
       <div className='w-[500px]'>
-        <Tabs tabs={tabs} defaultTabIndex={0} />
+        <p className='text-2xl font-bold mb-4'>horizontal tabs</p>
+        <HorizontalTabs tabs={tabs} defaultTabIndex={1} />
+      </div>
+      <div className='w-[500px]'>
+        <p className='text-2xl font-bold mb-4'>vertical tabs</p>
+        <VerticalTabs tabs={tabs} defaultTabIndex={1} />
       </div>
     </div>
   );
