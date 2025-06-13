@@ -54,7 +54,7 @@ function App() {
       </div>
       <div className='w-[500px]'>
         <p className='text-2xl font-bold mb-4'>vertical tabs</p>
-        <VerticalTabs tabs={tabs} defaultTabIndex={1} />
+        <VerticalTabs tabs={tabs} defaultTabIndex={0} />
       </div>
     </div>
   );
