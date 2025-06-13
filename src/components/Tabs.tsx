@@ -52,7 +52,6 @@ export function Tabs({ tabs, defaultTabIndex = 0 }: TabsProps) {
         onPointerLeave={() => setHoveredTabIndex(null)}>
         {tabs.map((tab, index) => {
           const isActive = selectedTabIndex === index;
-          const isHovered = hoveredTabIndex === index;
 
           return (
             <div
